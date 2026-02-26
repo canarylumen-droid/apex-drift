@@ -61,6 +61,17 @@ public class gopannel : MonoBehaviour {
 				GameObject.FindObjectOfType<RCC_DashboardInputs> ().GetVehicle (cars[i].GetComponent<RCC_CarControllerV3> ());
 		}
 
+		// Start race timer after GO!
+		if (RaceTimer.Instance != null)
+			RaceTimer.Instance.StartTimer();
+
+		// Start interstitial timer
+		if (InterstitialAdController.Instance != null)
+			InterstitialAdController.Instance.StartTimer();
+
+		// Hide banner during active racing
+		if (AdManager.Instance != null)
+			AdManager.Instance.HideBanner();
 
 		otherUIElement.gameObject.SetActive(false);
 }

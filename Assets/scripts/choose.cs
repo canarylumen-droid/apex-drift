@@ -19,18 +19,40 @@ public class choose : MonoBehaviour
 		}
 	}
 	public void Choose(int n){
-		if (PlayerPrefs.GetInt ("score") < n * 1000)
+		// Check both legacy score AND new coin system for car unlock
+		bool canUnlock = false;
+
+		// Legacy check
+		if (PlayerPrefs.GetInt ("score") >= n * 1000)
+			canUnlock = true;
+
+		// New coin-based unlock check
+		if (CurrencyManager.Instance != null && n < GameConfig.CAR_UNLOCK_COSTS.Length)
+		{
+			if (CurrencyManager.Instance.Coins >= GameConfig.CAR_UNLOCK_COSTS[n])
+				canUnlock = true;
+		}
+
+		if (!canUnlock)
 			return;
+
 		num = n;
 		GameObject.FindObjectOfType<RCC_Camera> ().SetPlayerCar (car [n].gameObject);
 
 		for (int i = 0; i < 5; i++) {
 			if (n == i) {
-				car [i].gameObject.GetComponent<RCC_CarControllerV3> ().steerHelperStrength =.55f ;	
-				/*car [i].gameObject.GetComponent<RCC_CarControllerV3> ().tractionHelperStrength = .1f;
-				car [i].gameObject.GetComponent<RCC_CarControllerV3> ().TCS = true;
-				car [i].gameObject.GetComponent<RCC_CarControllerV3> ().TCSThreshold = .5f;
-				car [i].gameObject.GetComponent<RCC_CarControllerV3> ().TCSStrength = 1f;*/
+				car [i].gameObject.GetComponent<RCC_CarControllerV3> ().steerHelperStrength =.55f ;
+
+				// Apply car upgrades from shop
+				if (CarUpgradeData.Instance != null)
+				{
+					RCC_CarControllerV3 ctrl = car[i].gameObject.GetComponent<RCC_CarControllerV3>();
+					float speedMult = CarUpgradeData.Instance.GetStatMultiplier(n, CarUpgradeData.StatType.Speed);
+					float handlingMult = CarUpgradeData.Instance.GetStatMultiplier(n, CarUpgradeData.StatType.Handling);
+					ctrl.maxspeed *= speedMult;
+					ctrl.steerHelperStrength *= handlingMult;
+				}
+
 				continue;
 			}
 			car [i].gameObject.AddComponent<RCC_AICarController> ();

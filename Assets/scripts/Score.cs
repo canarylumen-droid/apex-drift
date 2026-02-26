@@ -11,13 +11,13 @@ public class Score : MonoBehaviour
 	{ 	score=PlayerPrefs.GetInt ("score"); 
 		if(score==0)
 		PlayerPrefs.SetInt ("score",2900); 
-		textLabel.text="Score : "+score.ToString("0");
+		textLabel.text="Apex Drift Score: "+score.ToString("0");
 	}
 
 	public void getscore ()
 	{
 		score=PlayerPrefs.GetInt ("score"); 
-		textLabel.text="Score : "+score.ToString("0");
+		textLabel.text="Apex Drift Score: "+score.ToString("0");
 	}
 	
 

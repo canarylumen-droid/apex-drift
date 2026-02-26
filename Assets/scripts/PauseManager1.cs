@@ -26,7 +26,7 @@ public class PauseManager1 : MonoBehaviour {
 	public void Restart()
 	{   
 		
-		Application.LoadLevel(Application.loadedLevel);
+		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 		Time.timeScale = 1; 
 
 		}
@@ -78,7 +78,7 @@ public class PauseManager1 : MonoBehaviour {
 			pauseMenu.text = "Pause Menu";
 		}*/
 
-		if (Input.GetKeyDown(KeyCode.Escape) && mainPanel.active == false)
+		if (Input.GetKeyDown(KeyCode.Escape) && mainPanel.activeSelf == false)
 		{   mainPanel.SetActive(true);
 		/*	vidPanel.SetActive(false);
 			audioPanel.SetActive(false);
@@ -87,7 +87,7 @@ public class PauseManager1 : MonoBehaviour {
 			Time.timeScale = 0;
 			
 		}
-		else if(Input.GetKeyDown(KeyCode.Escape) && mainPanel.active == true) {
+		else if(Input.GetKeyDown(KeyCode.Escape) && mainPanel.activeSelf == true) {
 			Time.timeScale = 1f;
 			/*mainPanel.SetActive(false);
 			/*vidPanel.SetActive(false);
