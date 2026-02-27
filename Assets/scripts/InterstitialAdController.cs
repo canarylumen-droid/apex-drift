@@ -13,8 +13,9 @@ public class InterstitialAdController : MonoBehaviour
     private float timer = 0f;
     private bool timerRunning = false;
 
-    // Uncomment when AdMob plugin is imported:
-    // private GoogleMobileAds.Api.InterstitialAd interstitialAd;
+#if USE_ADMOB
+    private GoogleMobileAds.Api.InterstitialAd interstitialAd;
+#endif
 
     void Awake()
     {
@@ -87,9 +88,7 @@ public class InterstitialAdController : MonoBehaviour
 
     public void LoadInterstitial()
     {
-        /*
-        // UNCOMMENT AFTER IMPORTING ADMOB PLUGIN:
-
+#if USE_ADMOB
         // Clean up previous ad
         if (interstitialAd != null)
         {
@@ -126,37 +125,36 @@ public class InterstitialAdController : MonoBehaviour
                 };
             }
         );
-        */
-
-        // TEMP: Simulate loaded
+#else
+        // Simulation mode
         adLoaded = true;
-        Debug.Log("[Interstitial] Test mode — ad simulated as loaded.");
+        Debug.Log("[Interstitial] Simulation Mode — ad loaded.");
+#endif
     }
 
     // ===== SHOW =====
 
     void ShowInterstitial()
     {
-        /*
-        // UNCOMMENT AFTER IMPORTING ADMOB PLUGIN:
+#if USE_ADMOB
         if (interstitialAd != null && interstitialAd.CanShowAd())
         {
             interstitialAd.Show();
             timer = 0f; // Reset timer after showing
             Debug.Log("[Interstitial] Showing ad.");
         }
-        */
-
-        // TEMP: Simulate show
+#else
+        // Simulation mode
         timer = 0f;
-        Debug.Log("[Interstitial] Test mode — ad shown (simulated). Timer reset.");
+        Debug.Log("[Interstitial] Simulation Mode — ad shown. Timer reset.");
+#endif
     }
 
     void OnDestroy()
     {
-        /*
+#if USE_ADMOB
         if (interstitialAd != null)
             interstitialAd.Destroy();
-        */
+#endif
     }
 }

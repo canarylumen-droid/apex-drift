@@ -14,8 +14,9 @@ public class BannerAdController : MonoBehaviour
     private bool bannerVisible = false;
     private float rotateTimer = 0f;
 
-    // Uncomment when AdMob plugin is imported:
-    // private GoogleMobileAds.Api.BannerView bannerView;
+#if USE_ADMOB
+    private GoogleMobileAds.Api.BannerView bannerView;
+#endif
 
     void Awake()
     {
@@ -45,9 +46,7 @@ public class BannerAdController : MonoBehaviour
 
     public void LoadBanner()
     {
-        /*
-        // UNCOMMENT AFTER IMPORTING ADMOB PLUGIN:
-
+#if USE_ADMOB
         // Clean up old banner
         if (bannerView != null)
         {
@@ -77,11 +76,11 @@ public class BannerAdController : MonoBehaviour
         // Load the ad
         GoogleMobileAds.Api.AdRequest request = new GoogleMobileAds.Api.AdRequest();
         bannerView.LoadAd(request);
-        */
-
-        // TEMP: Simulate loaded
+#else
+        // Simulation mode
         bannerLoaded = true;
-        Debug.Log("[BannerAd] Test mode — banner simulated.");
+        Debug.Log("[BannerAd] Simulation Mode — banner loaded.");
+#endif
     }
 
     // ===== SHOW / HIDE =====
@@ -91,10 +90,10 @@ public class BannerAdController : MonoBehaviour
         bannerVisible = true;
         rotateTimer = 0f;
 
-        /*
+#if USE_ADMOB
         if (bannerView != null)
             bannerView.Show();
-        */
+#endif
 
         Debug.Log("[BannerAd] Banner shown.");
     }
@@ -103,10 +102,10 @@ public class BannerAdController : MonoBehaviour
     {
         bannerVisible = false;
 
-        /*
+#if USE_ADMOB
         if (bannerView != null)
             bannerView.Hide();
-        */
+#endif
 
         Debug.Log("[BannerAd] Banner hidden.");
     }
@@ -115,22 +114,22 @@ public class BannerAdController : MonoBehaviour
 
     void RefreshBanner()
     {
-        /*
+#if USE_ADMOB
         if (bannerView != null)
         {
             GoogleMobileAds.Api.AdRequest request = new GoogleMobileAds.Api.AdRequest();
             bannerView.LoadAd(request);
         }
-        */
+#endif
 
         Debug.Log("[BannerAd] Banner refreshed (60s cycle).");
     }
 
     void OnDestroy()
     {
-        /*
+#if USE_ADMOB
         if (bannerView != null)
             bannerView.Destroy();
-        */
+#endif
     }
 }

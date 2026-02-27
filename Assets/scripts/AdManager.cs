@@ -1,18 +1,15 @@
+// #define USE_ADMOB // Uncomment this after importing Google Mobile Ads plugin
+
 using UnityEngine;
 
 /// <summary>
 /// AdMob Manager for Apex Drift: 3D Racing.
 /// Initializes the Mobile Ads SDK and coordinates all ad types.
-/// Attach to a persistent GameObject (DontDestroyOnLoad).
-/// 
-/// REQUIRES: Google Mobile Ads Unity Plugin
-/// Install via: Unity Package Manager or import GoogleMobileAds.unitypackage
 /// </summary>
 public class AdManager : MonoBehaviour
 {
     public static AdManager Instance { get; private set; }
 
-    // Track if SDK is initialized
     public bool IsInitialized { get; private set; }
 
     void Awake()
@@ -33,11 +30,7 @@ public class AdManager : MonoBehaviour
 
     void InitializeAds()
     {
-        // ===================================================================
-        // UNCOMMENT THE BLOCK BELOW AFTER IMPORTING Google Mobile Ads Plugin
-        // ===================================================================
-
-        /*
+#if USE_ADMOB
         // Initialize the Google Mobile Ads SDK
         GoogleMobileAds.Api.MobileAds.Initialize(initStatus =>
         {
@@ -54,11 +47,15 @@ public class AdManager : MonoBehaviour
             if (RewardedAdController.Instance != null)
                 RewardedAdController.Instance.LoadRewardedAd();
         });
-        */
-
-        // TEMPORARY: For development without AdMob plugin
+#else
         IsInitialized = true;
-        Debug.Log("[AdManager] Running in test mode (AdMob plugin not imported yet).");
+        Debug.Log("[AdManager] Running in Simulation Mode (AdMob plugin not detected).");
+        
+        // In simulation, trigger loads immediately
+        if (BannerAdController.Instance != null) BannerAdController.Instance.LoadBanner();
+        if (InterstitialAdController.Instance != null) InterstitialAdController.Instance.LoadInterstitial();
+        if (RewardedAdController.Instance != null) RewardedAdController.Instance.LoadRewardedAd();
+#endif
     }
 
     // ===== CONVENIENCE METHODS =====

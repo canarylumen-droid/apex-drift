@@ -17,8 +17,9 @@ public class RewardedAdController : MonoBehaviour
     private int rewardedAdsToday = 0;
     private string lastRewardDate = "";
 
-    // Uncomment when AdMob plugin is imported:
-    // private GoogleMobileAds.Api.RewardedAd rewardedAd;
+#if USE_ADMOB
+    private GoogleMobileAds.Api.RewardedAd rewardedAd;
+#endif
 
     // Event for external listeners
     public delegate void OnRewardGranted(string rewardType);
@@ -82,9 +83,7 @@ public class RewardedAdController : MonoBehaviour
 
     public void LoadRewardedAd()
     {
-        /*
-        // UNCOMMENT AFTER IMPORTING ADMOB PLUGIN:
-
+#if USE_ADMOB
         // Clean up previous ad
         if (rewardedAd != null)
         {
@@ -120,11 +119,11 @@ public class RewardedAdController : MonoBehaviour
                 };
             }
         );
-        */
-
-        // TEMP: Simulate loaded
+#else
+        // Simulation mode
         adLoaded = true;
-        Debug.Log("[RewardedAd] Test mode — ad simulated as loaded.");
+        Debug.Log("[RewardedAd] Simulation Mode — ad loaded.");
+#endif
     }
 
     // ===== SHOW =====
@@ -151,8 +150,7 @@ public class RewardedAdController : MonoBehaviour
 
         pendingRewardType = rewardType;
 
-        /*
-        // UNCOMMENT AFTER IMPORTING ADMOB PLUGIN:
+#if USE_ADMOB
         if (rewardedAd != null && rewardedAd.CanShowAd())
         {
             rewardedAd.Show((GoogleMobileAds.Api.Reward reward) =>
@@ -161,11 +159,11 @@ public class RewardedAdController : MonoBehaviour
                 GrantReward(pendingRewardType);
             });
         }
-        */
-
-        // TEMP: Simulate reward
-        Debug.Log("[RewardedAd] Test mode — granting reward: " + rewardType);
+#else
+        // Simulation mode
+        Debug.Log("[RewardedAd] Simulation Mode — showing ad for reward: " + rewardType);
         GrantReward(rewardType);
+#endif
     }
 
     // ===== GRANT REWARDS =====

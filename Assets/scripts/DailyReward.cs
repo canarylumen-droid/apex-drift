@@ -95,6 +95,10 @@ public class DailyReward : MonoBehaviour
         PlayerPrefs.SetInt("daily_streak", consecutiveDays);
         PlayerPrefs.Save();
 
+        // Refresh legacy score if present
+        if (Score.Instance != null)
+            Score.Instance.getscore();
+
         // Hide panel
         if (rewardPanel != null)
             rewardPanel.SetActive(false);
