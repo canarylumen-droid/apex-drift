@@ -1,0 +1,247 @@
+
+// Copyright (C) 2025 Google, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+using GoogleMobileAds.Api;
+
+namespace GoogleMobileAds.Android {
+  internal class NextGenUtils {
+#region Fully - qualified NextGen Mobile Ads SDK class names
+
+#region RequestConfiguration
+    public const string MaxAdContentRatingClassName =
+        "com.google.android.libraries.ads.mobile.sdk.common.RequestConfiguration$MaxAdContentRating";
+    public const string PublisherPrivacyPersonalizationStateEnumName =
+        "com.google.android.libraries.ads.mobile.sdk.common.RequestConfiguration$PublisherPrivacyPersonalizationState";
+    public const string RequestConfigurationBuilderClassName =
+        "com.google.android.libraries.ads.mobile.sdk.common.RequestConfiguration$Builder";
+    public const string TagForChildDirectedTreatmentClassName =
+        "com.google.android.libraries.ads.mobile.sdk.common.RequestConfiguration$TagForChildDirectedTreatment";
+    public const string TagForUnderAgeOfConsentClassName =
+        "com.google.android.libraries.ads.mobile.sdk.common.RequestConfiguration$TagForUnderAgeOfConsent";
+#endregion
+
+#region MobileAds
+    public const string InitializationConfigBuilderClassName =
+        "com.google.android.libraries.ads.mobile.sdk.initialization.InitializationConfig$Builder";
+    public const string AdapterStatusInitializationStateName =
+        "com.google.android.libraries.ads.mobile.sdk.initialization.AdapterStatus$InitializationState";
+    public const string MobileAdsClassName =
+        "com.google.android.libraries.ads.mobile.sdk.MobileAds";
+    public const string OnInitializationCompleteListenerClassName =
+        "com.google.android.libraries.ads.mobile.sdk.initialization.OnAdapterInitializationCompleteListener";
+#endregion
+
+#region AdRequest
+    public const string AdRequestBuilderClassName =
+        "com.google.android.libraries.ads.mobile.sdk.common.AdRequest$Builder";
+    public const string BannerAdRequestBuilderClassName =
+        "com.google.android.libraries.ads.mobile.sdk.banner.BannerAdRequest$Builder";
+    public const string NativeAdRequestBuilderClassName =
+        "com.google.android.libraries.ads.mobile.sdk.nativead.NativeAdRequest$Builder";
+#endregion
+
+#region AdSize
+    public const string AdSizeClassName =
+        "com.google.android.libraries.ads.mobile.sdk.banner.AdSize";
+#endregion
+
+#region PreloadConfiguration
+    public const string PreloadConfigurationClassName =
+        "com.google.android.libraries.ads.mobile.sdk.common.PreloadConfiguration";
+#endregion
+
+#region NativeAd
+    public const string NativeAdTypeClassName =
+        "com.google.android.libraries.ads.mobile.sdk.nativead.NativeAd$NativeAdType";
+#endregion
+
+#endregion
+
+#region Fully - qualified Unity NextGen Bridge class names
+
+    public const string UnityMobileAdsClassName = "com.google.unity.ads.nextgen.UnityMobileAds";
+    public const string UnityAdInspectorClassName = "com.google.unity.ads.nextgen.UnityAdInspector";
+    public const string UnityAdInspectorListenerClassName =
+        "com.google.unity.ads.nextgen.UnityAdInspectorListener";
+    public const string UnityPreloadCallbackClassName =
+        "com.google.unity.ads.nextgen.UnityPreloadCallback";
+
+    public const string UnityAppOpenAdClassName = "com.google.unity.ads.nextgen.UnityAppOpenAd";
+    public const string UnityAppOpenAdCallbackClassName =
+        "com.google.unity.ads.nextgen.UnityAppOpenAdCallback";
+    public const string UnityAppOpenAdPreloaderClassName =
+        "com.google.unity.ads.nextgen.UnityAppOpenAdPreloader";
+
+    public const string UnityBannerAdClassName = "com.google.unity.ads.nextgen.UnityBannerAd";
+    public const string UnityBannerAdCallbackClassName =
+        "com.google.unity.ads.nextgen.UnityBannerAdCallback";
+
+    public const string UnityInterstitialAdClassName =
+        "com.google.unity.ads.nextgen.UnityInterstitialAd";
+    public const string UnityInterstitialAdCallbackClassName =
+        "com.google.unity.ads.nextgen.UnityInterstitialAdCallback";
+
+    public const string UnityRewardedAdClassName = "com.google.unity.ads.nextgen.UnityRewardedAd";
+    public const string UnityRewardedAdCallbackClassName =
+        "com.google.unity.ads.nextgen.UnityRewardedAdCallback";
+    public const string UnityRewardedAdPreloaderClassName =
+        "com.google.unity.ads.nextgen.UnityRewardedAdPreloader";
+
+    public const string UnityRewardedInterstitialAdClassName =
+        "com.google.unity.ads.nextgen.UnityRewardedInterstitialAd";
+    public const string UnityRewardedInterstitialAdCallbackClassName =
+        "com.google.unity.ads.nextgen.UnityRewardedInterstitialAdCallback";
+    public const string UnityInterstitialAdPreloaderClassName =
+        "com.google.unity.ads.nextgen.UnityInterstitialAdPreloader";
+#endregion
+
+    /// <summary>
+    /// Converts the plugin AdRequest object to a native java proxy object for use by the sdk.
+    /// </summary>
+    /// <param name="AdRequest">the AdRequest from the unity plugin.</param>
+    public static AndroidJavaObject GetAdRequestJavaObject(AdRequest request, string adUnitId) {
+      AndroidJavaObject adRequestBuilder =
+          new AndroidJavaObject(AdRequestBuilderClassName, adUnitId);
+      foreach (string keyword in request.Keywords) {
+        adRequestBuilder.Call<AndroidJavaObject>("addKeyword", keyword);
+      }
+
+      foreach (KeyValuePair<string, string> entry in request.CustomTargeting) {
+        adRequestBuilder.Call<AndroidJavaObject>("putCustomTargeting", entry.Key, entry.Value);
+      }
+      adRequestBuilder.Call<AndroidJavaObject>("setRequestAgent", AdRequest.BuildVersionString());
+
+      return adRequestBuilder.Call<AndroidJavaObject>("build");
+    }
+
+    /// <summary>
+    /// Converts the plugin AdRequest object to a native java proxy object for use by the sdk.
+    /// </summary>
+    /// <param name="AdRequest">the AdRequest from the unity plugin.</param>
+    public static AndroidJavaObject GetBannerAdRequestJavaObject(string adUnitId, AdRequest request,
+                                                                 AdSize adSize) {
+      AndroidJavaObject bannerAdRequestBuilder = new AndroidJavaObject(
+          BannerAdRequestBuilderClassName, adUnitId, GetAdSizeJavaObject(adSize));
+      foreach (string keyword in request.Keywords) {
+        bannerAdRequestBuilder.Call<AndroidJavaObject>("addKeyword", keyword);
+      }
+
+      foreach (KeyValuePair<string, string> entry in request.CustomTargeting) {
+        bannerAdRequestBuilder.Call<AndroidJavaObject>("putCustomTargeting", entry.Key,
+                                                       entry.Value);
+      }
+      bannerAdRequestBuilder.Call<AndroidJavaObject>("setRequestAgent",
+                                                     AdRequest.BuildVersionString());
+
+      return bannerAdRequestBuilder.Call<AndroidJavaObject>("build");
+    }
+
+    /// <summary>
+    /// Converts the plugin AdRequest object to a native java proxy object for use by the sdk.
+    /// </summary>
+    /// <param name="AdRequest">the AdRequest from the unity plugin.</param>
+    public static AndroidJavaObject GetNativeAdRequestJavaObject(
+        string adUnitId, AdRequest request, string nativePluginVersion = null) {
+      AndroidJavaClass nativeAdTypeClass = new AndroidJavaClass(NativeAdTypeClassName);
+      AndroidJavaObject nativeTypeNative = nativeAdTypeClass.GetStatic<AndroidJavaObject>("NATIVE");
+
+      AndroidJavaObject nativeAdTypesList = new AndroidJavaObject("java.util.ArrayList");
+      nativeAdTypesList.Call<bool>("add", nativeTypeNative);
+
+      AndroidJavaObject nativeAdRequestBuilder =
+          new AndroidJavaObject(NativeAdRequestBuilderClassName, adUnitId, nativeAdTypesList);
+      nativeAdRequestBuilder.Call<AndroidJavaObject>("disableImageDownloading");
+
+      foreach (string keyword in request.Keywords) {
+        nativeAdRequestBuilder.Call<AndroidJavaObject>("addKeyword", keyword);
+      }
+
+      // TODO(b/485327880): Extras are split into two different categories in the next-gen sdk. The
+      // below implementation only maps to the GoogleExtras so the third-party extras should be
+      // handled separately.
+      if (request.Extras != null)
+      {
+          AndroidJavaObject bundle = new AndroidJavaObject(Utils.BundleClassName);
+          foreach (KeyValuePair<string, string> entry in request.Extras)
+          {
+              bundle.Call("putString", entry.Key, entry.Value);
+          }
+          nativeAdRequestBuilder.Call<AndroidJavaObject>("setGoogleExtrasBundle", bundle);
+      }
+
+      foreach (KeyValuePair<string, string> entry in request.CustomTargeting) {
+        nativeAdRequestBuilder.Call<AndroidJavaObject>("putCustomTargeting", entry.Key,
+                                                       entry.Value);
+      }
+      nativeAdRequestBuilder.Call<AndroidJavaObject>(
+          "setRequestAgent", AdRequest.BuildVersionString(nativePluginVersion));
+
+      return nativeAdRequestBuilder.Call<AndroidJavaObject>("build");
+    }
+
+    public static AndroidJavaObject GetAdSizeJavaObject(AdSize adSize) {
+      AndroidJavaClass adSizeClass = new AndroidJavaClass(AdSizeClassName);
+      switch (adSize.AdType) {
+        case AdSize.Type.AnchoredAdaptive:
+          AndroidJavaClass playerClass = new AndroidJavaClass(Utils.UnityActivityClassName);
+          AndroidJavaObject activity = playerClass.GetStatic<AndroidJavaObject>("currentActivity");
+          switch (adSize.Orientation) {
+            case Orientation.Landscape:
+              return adSizeClass.CallStatic<AndroidJavaObject>(
+                  "getLandscapeAnchoredAdaptiveBannerAdSize", activity, adSize.Width);
+            case Orientation.Portrait:
+              return adSizeClass.CallStatic<AndroidJavaObject>(
+                  "getPortraitAnchoredAdaptiveBannerAdSize", activity, adSize.Width);
+            case Orientation.Current:
+              return adSizeClass.CallStatic<AndroidJavaObject>(
+                  "getCurrentOrientationAnchoredAdaptiveBannerAdSize", activity, adSize.Width);
+            default:
+              throw new ArgumentException("Invalid Orientation provided for ad size.");
+          }
+        case AdSize.Type.Standard:
+          return new AndroidJavaObject(AdSizeClassName, adSize.Width, adSize.Height);
+        default:
+          throw new ArgumentException("Invalid AdSize.Type provided for ad size.");
+      }
+    }
+
+    public static AndroidJavaObject GetPreloadConfigurationJavaObject(
+        PreloadConfiguration preloadConfiguration) {
+      if (preloadConfiguration.AdUnitId == null) {
+        throw new ArgumentNullException("PreloadConfiguration.AdUnitId");
+      }
+      AndroidJavaObject adRequest =
+          GetAdRequestJavaObject(preloadConfiguration.Request, preloadConfiguration.AdUnitId);
+      if (preloadConfiguration.BufferSize > 0) {
+        return new AndroidJavaObject(NextGenUtils.PreloadConfigurationClassName, adRequest,
+                                     preloadConfiguration.BufferSize);
+      }
+      return new AndroidJavaObject(NextGenUtils.PreloadConfigurationClassName, adRequest);
+    }
+
+    public static PreloadConfiguration GetPreloadConfiguration(
+        AndroidJavaObject configurationJavaObject) {
+      if (configurationJavaObject == null) {
+        return null;
+      }
+      string adUnitId = configurationJavaObject.Call<string>("getAdUnitId");
+      uint bufferSize = Convert.ToUInt32(configurationJavaObject.Call<int>("getBufferSize"));
+      return new PreloadConfiguration() { AdUnitId = adUnitId, BufferSize = bufferSize };
+    }
+  }
+}
