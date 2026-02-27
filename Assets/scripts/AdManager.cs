@@ -1,4 +1,4 @@
-// #define USE_ADMOB // Uncomment this after importing Google Mobile Ads plugin
+#define USE_ADMOB // Enabled for live ads integration as requested by user
 
 using UnityEngine;
 
