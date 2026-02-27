@@ -15,13 +15,23 @@ jobs:
         with:
           lfs: true
 
+      - name: Free Disk Space
+        run: |
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc
+
       - name: Cache Unity Library
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: Library
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
+
+      - name: Return License
+        uses: game-ci/unity-return-license@v4
+        if: always()
+        with:
+          targetPlatform: Android
 
       - name: Build Unity Project
         uses: game-ci/unity-builder@v4
@@ -33,6 +43,8 @@ jobs:
           targetPlatform: Android
           unityVersion: '6000.3.10f1'
           buildName: 'ApexDrift'
+          allowDirtyBuild: true
+          versioning: Semantic
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
