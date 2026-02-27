@@ -27,12 +27,6 @@ jobs:
           restore-keys: |
             Library-
 
-      - name: Return License
-        uses: game-ci/unity-return-license@v4
-        if: always()
-        with:
-          targetPlatform: Android
-
       - name: Build Unity Project
         uses: game-ci/unity-builder@v4
         env:
@@ -51,3 +45,7 @@ jobs:
         with:
           name: ApexDrift-APK
           path: build/Android
+
+      - name: Return License
+        uses: game-ci/unity-return-license@v2
+        if: always()
