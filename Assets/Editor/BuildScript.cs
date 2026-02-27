@@ -71,11 +71,11 @@ public class BuildScript
         PlayerSettings.Android.targetSdkVersion = (AndroidSdkVersions)35; // Android 15+ (API 35)
 
         // Keystore
-        PlayerSettings.Android.useCustomKeystore = true;
-        PlayerSettings.Android.keystoreName = "apexdrift.keystore";
-        PlayerSettings.Android.keystorePass = "ApexDrift2024!";
-        PlayerSettings.Android.keyaliasName = "apexdrift";
-        PlayerSettings.Android.keyaliasPass = "ApexDrift2024!";
+        PlayerSettings.Android.useCustomKeystore = false;
+        // PlayerSettings.Android.keystoreName = "apexdrift.keystore";
+        // PlayerSettings.Android.keystorePass = "ApexDrift2024!";
+        // PlayerSettings.Android.keyaliasName = "apexdrift";
+        // PlayerSettings.Android.keyaliasPass = "ApexDrift2024!";
 
         // Graphics
         PlayerSettings.SetGraphicsAPIs(BuildTarget.Android, new[] {
