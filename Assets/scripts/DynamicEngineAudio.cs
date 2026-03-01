@@ -8,7 +8,7 @@ using UnityEngine;
 [RequireComponent(typeof(RCC_CarControllerV3))]
 public class DynamicEngineAudio : MonoBehaviour
 {
-    public enum CarProfile { Standard, Racing, Supercar, BMW_i8 }
+    public enum CarProfile { Standard, Racing, Supercar, BMW_i8, Lamborghini }
     
     private RCC_CarControllerV3 carController;
     private AudioSource engineSource;
@@ -37,10 +37,9 @@ public class DynamicEngineAudio : MonoBehaviour
         // Setup the local audio source for the engine
         engineSource = gameObject.AddComponent<AudioSource>();
         engineSource.loop = true;
-        engineSource.spatialBlend = 1.0f; // 3D sound
+        engineSource.spatialBlend = 1.0f; 
         engineSource.playOnAwake = false;
 
-        // Apply profile-based tweaks
         ApplyProfileStats();
 
         if (engineIdle != null)
@@ -55,15 +54,19 @@ public class DynamicEngineAudio : MonoBehaviour
         switch (carProfile)
         {
             case CarProfile.BMW_i8:
-                loudnessBoost = 1.6f; // "Loudest" as requested
-                pitchMultiplier = 1.2f; // "Rev hire"
+                loudnessBoost = 1.8f; // Loudest
+                pitchMultiplier = 1.25f; // High-tech revs
+                break;
+            case CarProfile.Lamborghini:
+                loudnessBoost = 1.6f;
+                pitchMultiplier = 1.15f; // Deep aggressive roar
                 break;
             case CarProfile.Supercar:
-                loudnessBoost = 1.3f;
+                loudnessBoost = 1.4f;
                 pitchMultiplier = 1.1f;
                 break;
             case CarProfile.Racing:
-                loudnessBoost = 1.4f;
+                loudnessBoost = 1.5f;
                 break;
         }
     }
@@ -79,20 +82,22 @@ public class DynamicEngineAudio : MonoBehaviour
 
         engineSource.pitch = basePitch * pitchMultiplier;
 
-        // Advanced Volume Logic: Dynamic mixing for acceleration vs deceleration
+        // Wise Mixing: Advanced Volume Curve
         float throttle = carController.throttleInput;
+        float speed = carController.speed;
         
-        // Use a higher floor for racing cars, but allow lower volume on deceleration
-        float currentTargetVolume = Mathf.Lerp(0.4f, 1.0f, Mathf.Abs(throttle));
+        // High speed wind resistance simulation: slightly compress volume at very high speeds
+        float windComp = Mathf.Lerp(1.0f, 0.85f, speed / 250f);
         
-        // Apply the loudness boost
-        engineSource.volume = currentTargetVolume * loudnessBoost;
+        float currentTargetVolume = Mathf.Lerp(0.45f, 1.0f, Mathf.Abs(throttle));
+        engineSource.volume = currentTargetVolume * loudnessBoost * windComp;
 
-        // Handle deceleration "whine" or "drop"
-        if (throttle <= 0 && carController.speed > 10)
+        // Handle deceleration "wise" reduction
+        if (throttle <= 0 && speed > 5)
         {
-            // Slightly drop pitch or add a filter effect if we had more complex DSP setup
-            engineSource.pitch *= 0.95f; 
+            // Rev drop on coasting
+            engineSource.pitch *= 0.92f; 
+            engineSource.volume *= 0.8f;
         }
     }
 }

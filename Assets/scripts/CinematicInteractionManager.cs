@@ -13,9 +13,13 @@ public class CinematicInteractionManager : MonoBehaviour
     public bool isRacing = false;
     public bool insideVehicle = true;
 
+    [Header("Cameras")]
+    public Camera characterCamera;
+    public Camera carCamera;
+    
     [Header("Jubilation Settings")]
-    public GameObject playerModel; // Assign a humanoid model if available
-    public AudioClip victoryCheer;
+    public GameObject playerModel; 
+    public string jubilationAnimParam = "isJubilating";
 
     void Awake()
     {
@@ -31,14 +35,16 @@ public class CinematicInteractionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// GTA-style entry/exit logic placeholder
+    /// GTA-style entry/exit logic with camera transitions
     /// </summary>
     public void ToggleVehicleEntry(bool entering)
     {
         insideVehicle = entering;
-        Debug.Log(entering ? "[Interaction] Player entered vehicle." : "[Interaction] Player exited vehicle.");
         
-        // Logic to switch between Humanoid Controller and RCC Car Controller would go here
+        if (characterCamera != null) characterCamera.gameObject.SetActive(!entering);
+        if (carCamera != null) carCamera.gameObject.SetActive(entering);
+
+        Debug.Log(entering ? "[Interaction] Player entered vehicle. Switching to Car Cam." : "[Interaction] Player exited vehicle. Switching to Foot Cam.");
     }
 
     /// <summary>
@@ -47,19 +53,33 @@ public class CinematicInteractionManager : MonoBehaviour
     public void SetDrunkState(bool active)
     {
         isDrunk = active;
-        Debug.Log(active ? "[Interaction] Player is DRUNK. Handling will swerve!" : "[Interaction] Player is sober.");
+        // Hook for Post-Processing (Chromatic Aberration/Blur) would go here
     }
 
     /// <summary>
-    /// Triggers the victory sequence
+    /// Triggers the victory sequence with Animation and Audio
     /// </summary>
     public void TriggerVictory()
     {
-        Debug.Log("[Interaction] RACE WON! Jubilating...");
+        isRacing = false;
         
         if (CinematicAudioManager.Instance != null)
             CinematicAudioManager.Instance.PlayCinematicSound("VictoryCheer", 1.0f);
 
-        // Logic to play 'Jubilate' animation on the playerModel
+        if (playerModel != null)
+        {
+            Animator anim = playerModel.GetComponent<Animator>();
+            if (anim != null) anim.SetTrigger(jubilationAnimParam);
+        }
+
+        // Slow down time for cinematic effect
+        Time.timeScale = 0.5f;
+        StartCoroutine(ResetTimeScale());
+    }
+
+    private IEnumerator ResetTimeScale()
+    {
+        yield return new WaitForSecondsRealtime(3f);
+        Time.timeScale = 1.0f;
     }
 }

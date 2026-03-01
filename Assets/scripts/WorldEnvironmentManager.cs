@@ -8,6 +8,8 @@ public class WorldEnvironmentManager : MonoBehaviour
 {
     public static WorldEnvironmentManager Instance { get; private set; }
 
+    public enum WeatherState { Clear, Overcast, Foggy, Rainy }
+
     [Header("Lighting")]
     public Light sunLight;
     public Color dayColor = Color.white;
@@ -15,13 +17,22 @@ public class WorldEnvironmentManager : MonoBehaviour
     public float nightIntensity = 0.2f;
     public float dayIntensity = 1.0f;
 
-    [Header("Shadow Settings")]
+    [Header("Shadow & Backdrop")]
     public LightShadows shadowType = LightShadows.Soft;
+    [Range(0,1)] public float shadowNormalBias = 0.05f;
     public float shadowStrength = 1.0f;
+
+    [Header("Weather Settings")]
+    public WeatherState currentWeather = WeatherState.Clear;
+    public float fogDensityDay = 0.01f;
+    public float fogDensityNight = 0.03f;
+    public Color rainFogColor = new Color(0.4f, 0.4f, 0.45f);
 
     [Header("States")]
     public bool isNight = false;
-    [Range(0, 1)] public float currentTimeOfDay = 0.5f; // 0 is night, 0.5 is day, 1 is night
+    public bool autoCycle = true;
+    public float cycleSpeed = 0.01f;
+    [Range(0, 1)] public float currentTimeOfDay = 0.5f; 
 
     void Awake()
     {
@@ -37,30 +48,65 @@ public class WorldEnvironmentManager : MonoBehaviour
 
         if (sunLight == null)
             sunLight = RenderSettings.sun;
+
+        // Global shadow quality for "human have shadow" requirement
+        QualitySettings.shadowDistance = 150f;
+        QualitySettings.shadowCascades = 4;
     }
 
     void Update()
     {
+        if (autoCycle)
+        {
+            currentTimeOfDay += Time.deltaTime * cycleSpeed;
+            if (currentTimeOfDay > 1) currentTimeOfDay = 0;
+        }
+
         ApplyLighting();
+        ApplyWeather();
     }
 
     private void ApplyLighting()
     {
         if (sunLight == null) return;
 
-        // Simple sun intensity based on time of day
-        // 0.5 is peak noon (highest intensity)
         float intensityMult = Mathf.Sin(currentTimeOfDay * Mathf.PI);
         sunLight.intensity = Mathf.Lerp(nightIntensity, dayIntensity, intensityMult);
         sunLight.color = Color.Lerp(nightColor, dayColor, intensityMult);
 
-        // Ambient light
         RenderSettings.ambientIntensity = sunLight.intensity;
         
-        // Ensure high-quality shadows for cinematic look
         sunLight.shadows = shadowType;
         sunLight.shadowStrength = shadowStrength;
+        sunLight.shadowNormalBias = shadowNormalBias;
+
+        // Backdrop/Skybox exposure sync
+        RenderSettings.skybox.SetFloat("_Exposure", sunLight.intensity);
     }
+
+    private void ApplyWeather()
+    {
+        RenderSettings.fog = true;
+        RenderSettings.fogMode = FogMode.ExponentialSquared;
+
+        switch (currentWeather)
+        {
+            case WeatherState.Clear:
+                RenderSettings.fogDensity = isNight ? fogDensityNight : fogDensityDay;
+                RenderSettings.fogColor = RenderSettings.ambientLight;
+                break;
+            case WeatherState.Foggy:
+                RenderSettings.fogDensity = 0.08f;
+                RenderSettings.fogColor = Color.gray;
+                break;
+            case WeatherState.Rainy:
+                RenderSettings.fogDensity = 0.05f;
+                RenderSettings.fogColor = rainFogColor;
+                // Hook for rain particle system activation would go here
+                break;
+        }
+    }
+}
 
     public void ToggleNightMode(bool night)
     {

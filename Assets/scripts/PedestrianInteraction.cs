@@ -10,8 +10,9 @@ public class PedestrianInteraction : MonoBehaviour
     public float shoutCooldown = 5f;
     
     [Header("Audio Clips")]
-    public AudioClip[] talkClips;
-    public AudioClip[] shoutClips;
+    public AudioClip[] talkClips;   // Greet, Talk, Gossip
+    public AudioClip[] shoutClips;  // Warnings, Speed Shouts
+    public AudioClip[] reactiveClips; // Reactions to "Illegal" driving
     
     private AudioSource voiceSource;
     private float lastShoutTime;
@@ -20,9 +21,17 @@ public class PedestrianInteraction : MonoBehaviour
     void Start()
     {
         voiceSource = gameObject.AddComponent<AudioSource>();
-        voiceSource.spatialBlend = 1.0f; // 3D spatial audio
+        voiceSource.spatialBlend = 1.0f; 
         voiceSource.minDistance = 2f;
         voiceSource.maxDistance = 15f;
+
+        // "Human have shadow" - Force casting
+        Renderer r = GetComponentInChildren<Renderer>();
+        if (r != null)
+        {
+            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+            r.receiveShadows = true;
+        }
     }
 
     void Update()
@@ -32,12 +41,10 @@ public class PedestrianInteraction : MonoBehaviour
 
     private void CheckForPlayer()
     {
-        // Find the player car (using RCC controller as anchor)
         RCC_CarControllerV3[] cars = FindObjectsOfType<RCC_CarControllerV3>();
         
         foreach (var car in cars)
         {
-            // Only interact with the controlled player car
             if (car.canControl && car.GetComponent<RCC_AICarController>() == null)
             {
                 float distance = Vector3.Distance(transform.position, car.transform.position);
@@ -62,18 +69,23 @@ public class PedestrianInteraction : MonoBehaviour
     {
         if (Time.time - lastShoutTime < shoutCooldown) return;
 
-        // If car is moving fast, SHOUT. If slow, TALK.
-        if (car.speed > 40f)
+        // 1. SHOUT if fast
+        if (car.speed > 50f)
         {
             PlayRandomClip(shoutClips);
             lastShoutTime = Time.time;
-            Debug.Log("[Pedestrian] SHOUTING at car speed: " + car.speed);
         }
+        // 2. COMPLAIN/TALK if slightly reckless
+        else if (car.speed > 25f)
+        {
+            PlayRandomClip(reactiveClips);
+            lastShoutTime = Time.time;
+        }
+        // 3. GREET if slow
         else if (car.speed < 10f)
         {
             PlayRandomClip(talkClips);
             lastShoutTime = Time.time;
-            Debug.Log("[Pedestrian] Talking/Greeting player.");
         }
     }
 
