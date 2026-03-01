@@ -39,6 +39,10 @@ public class GameBootstrap : MonoBehaviour
         CreateManager<RuntimeWorldBuilder>("RuntimeWorldBuilder");
         CreateManager<RuntimeUIBuilder>("RuntimeUIBuilder");
         CreateManager<DrunkVisualEffects>("DrunkVisualEffects");
+        CreateManager<WantedSystem>("WantedSystem");
+        CreateManager<PostProcessingManager>("PostProcessingManager");
+        CreateManager<CinematicGore>("CinematicGore");
+        CreateManager<MissionManager>("MissionManager");
     }
 
     void Start()
