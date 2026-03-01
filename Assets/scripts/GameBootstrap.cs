@@ -34,6 +34,7 @@ public class GameBootstrap : MonoBehaviour
         CreateManager<CinematicAudioManager>("CinematicAudioManager");
         CreateManager<WorldEnvironmentManager>("WorldEnvironmentManager");
         CreateManager<CinematicInteractionManager>("CinematicInteractionManager");
+        CreateManager<CinematicHUD>("CinematicHUD");
     }
 
     void Start()

@@ -8,7 +8,7 @@ using UnityEngine;
 [RequireComponent(typeof(RCC_CarControllerV3))]
 public class DynamicEngineAudio : MonoBehaviour
 {
-    public enum CarProfile { Standard, Racing, Supercar, BMW_i8, Lamborghini }
+    public enum CarProfile { Standard, Racing, Supercar, BMW_i8, Lamborghini, Audi_R8, Dodge_Viper, Aventador }
     
     private RCC_CarControllerV3 carController;
     private AudioSource engineSource;
@@ -54,12 +54,21 @@ public class DynamicEngineAudio : MonoBehaviour
         switch (carProfile)
         {
             case CarProfile.BMW_i8:
-                loudnessBoost = 1.8f; // Loudest
-                pitchMultiplier = 1.25f; // High-tech revs
+                loudnessBoost = 1.8f; 
+                pitchMultiplier = 1.25f; // "Loudest" and high revs
                 break;
             case CarProfile.Lamborghini:
+            case CarProfile.Aventador:
                 loudnessBoost = 1.6f;
-                pitchMultiplier = 1.15f; // Deep aggressive roar
+                pitchMultiplier = 1.15f; 
+                break;
+            case CarProfile.Audi_R8:
+                loudnessBoost = 1.5f;
+                pitchMultiplier = 1.2f; // High-pitch V10 scream
+                break;
+            case CarProfile.Dodge_Viper:
+                loudnessBoost = 1.7f;
+                pitchMultiplier = 0.9f; // Low-end V10 grunt
                 break;
             case CarProfile.Supercar:
                 loudnessBoost = 1.4f;
