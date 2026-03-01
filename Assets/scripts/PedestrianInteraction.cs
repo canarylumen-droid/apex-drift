@@ -39,6 +39,29 @@ public class PedestrianInteraction : MonoBehaviour
         CheckForPlayer();
     }
 
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.GetComponent<RCC_CarControllerV3>() != null)
+        {
+            float velocity = collision.relativeVelocity.magnitude;
+            
+            // 1. Cinematic Gore
+            if (CinematicGore.Instance != null)
+            {
+                CinematicGore.Instance.TriggerGore(transform.position, velocity);
+            }
+
+            // 2. Register Crime
+            if (WantedSystem.Instance != null && velocity > 15f)
+            {
+                WantedSystem.Instance.RegisterOffense(WantedSystem.OffenseType.HittingPedestrian);
+            }
+
+            // 3. Audio Reaction
+            PlayRandomClip(shoutClips);
+        }
+    }
+
     private void CheckForPlayer()
     {
         RCC_CarControllerV3[] cars = FindObjectsOfType<RCC_CarControllerV3>();

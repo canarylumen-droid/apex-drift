@@ -21,6 +21,7 @@ public class RuntimeWorldBuilder : MonoBehaviour
         SpawnPedestrians();
         SpawnTrafficLights();
         PlaceDriversInAllCars();
+        MakeEnvironmentDestructible();
     }
 
     // ───────────────────────── PEDESTRIANS ─────────────────────────
@@ -261,6 +262,7 @@ public class RuntimeWorldBuilder : MonoBehaviour
     private GameObject CreateTrafficLight(string name)
     {
         GameObject root = new GameObject(name);
+        root.AddComponent<DestructibleProp>().breakForce = 25f; // Traffic lights are sturdy
 
         // Pole
         GameObject pole = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
@@ -311,6 +313,26 @@ public class RuntimeWorldBuilder : MonoBehaviour
         ApplySmooth(green, Color.green);
 
         return root;
+    }
+
+    /// <summary>
+    /// Searches for existing objects that look like road props (fences, poles, boxes) 
+    /// and adds the DestructibleProp script to them automatically.
+    /// </summary>
+    private void MakeEnvironmentDestructible()
+    {
+        GameObject[] allObjects = FindObjectsOfType<GameObject>();
+        foreach (GameObject go in allObjects)
+        {
+            string n = go.name.ToLower();
+            if (n.Contains("fence") || n.Contains("pole") || n.Contains("barrel") || n.Contains("crate") || n.Contains("wall") || n.Contains("barrier"))
+            {
+                if (go.GetComponent<DestructibleProp>() == null && go.GetComponent<Renderer>() != null)
+                {
+                    go.AddComponent<DestructibleProp>();
+                }
+            }
+        }
     }
 
     // ───────────────────────── MATERIALS ─────────────────────────
