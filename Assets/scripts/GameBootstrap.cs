@@ -31,6 +31,9 @@ public class GameBootstrap : MonoBehaviour
         CreateManager<BannerAdController>("BannerAdController");
         CreateManager<InterstitialAdController>("InterstitialAdController");
         CreateManager<RewardedAdController>("RewardedAdController");
+        CreateManager<CinematicAudioManager>("CinematicAudioManager");
+        CreateManager<WorldEnvironmentManager>("WorldEnvironmentManager");
+        CreateManager<CinematicInteractionManager>("CinematicInteractionManager");
     }
 
     void Start()
