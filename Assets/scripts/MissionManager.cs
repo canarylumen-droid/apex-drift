@@ -10,10 +10,11 @@ public class MissionManager : MonoBehaviour
 {
     public static MissionManager Instance { get; private set; }
 
-    public enum MissionType { Delivery, Escape, Race }
+    public enum MissionType { Delivery, Escape, Race, Story }
     public bool isMissionActive = false;
+    public string currentMissionID;
     
-    private MissionType currentMission;
+    private MissionType currentType;
     private float timer;
 
     void Awake()

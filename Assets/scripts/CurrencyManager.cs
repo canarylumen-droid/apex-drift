@@ -71,6 +71,14 @@ public class CurrencyManager : MonoBehaviour
         Coins += amount;
         SaveCurrency();
         UpdateUI();
+        
+        // Phase 10 & 12: satisfy game-feel sound and visuals
+        if (SoundInteractionEngine.Instance != null && amount > 0)
+            SoundInteractionEngine.Instance.PlayMenuSound("coin");
+        
+        if (LuxuryHUDManager.Instance != null && amount > 0)
+            LuxuryHUDManager.Instance.TriggerCoinBurst(new Vector2(Screen.width / 2, Screen.height / 2));
+
         if (CurrencyChanged != null) CurrencyChanged(Coins, Gems);
     }
 
@@ -79,6 +87,11 @@ public class CurrencyManager : MonoBehaviour
         Gems += amount;
         SaveCurrency();
         UpdateUI();
+
+        // Phase 12: Premium sound
+        if (SoundInteractionEngine.Instance != null && amount > 0)
+            SoundInteractionEngine.Instance.PlayMenuSound("unlock"); // Gems are special
+
         if (CurrencyChanged != null) CurrencyChanged(Coins, Gems);
     }
 
